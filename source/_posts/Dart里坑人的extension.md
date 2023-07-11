@@ -1,5 +1,5 @@
 ---
-title: Dart里神奇的extension
+title: Dart里坑人的extension
 date: 2023-07-11 11:05:54
 tags:
 ---
@@ -37,7 +37,7 @@ extension on _111 {
 
 ## 为什么坑人
 
-如果想用extension做代码拆分的任务（虽然也有可能是这个初衷就存在问题），往extension里写入了一些你本来认为是「静态函数」的函数，认为引用的地址不会变。
+如果想用extension做代码拆分的任务（虽然也有可能是这个初衷就存在问题，本来就不应该用extension做代码拆分），往extension里写入了一些你本来认为是「静态函数」的函数，认为引用的地址不会变。
 
 比如
 
