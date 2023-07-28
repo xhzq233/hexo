@@ -5,6 +5,7 @@ tags:
   - Flutter
   - Cupertino
   - 手势冲突
+
 ---
 
 # Flutter：解决CupertinoContextMenu手势冲突
@@ -28,19 +29,19 @@ tags:
 
 3. 接下来无论持续按多久
 
-    1. 只要平移距离在preAcceptSlopTolerance（flutter里这个值限定死了是kTouchSlop，令人感叹）内
+   1. 只要平移距离在preAcceptSlopTolerance（flutter里这个值限定死了是kTouchSlop，令人感叹）内
 
-    2. arena里没有其他手势宣布胜利（在本情形里没有其他主动胜利的gesture）
+   2. arena里没有其他手势宣布胜利（在本情形里没有其他主动胜利的gesture）
 
    那么两个tap都准备成功，最后选出子child的tap作winner，reject 外层的tap，最终触发顺序：
 
-    1. onPointerDown
+     1. onPointerDown
 
-    2. inside onTapDown and onTapDown
+     2. inside onTapDown and onTapDown
 
-    3. inside onTapUp
+     3. inside onTapUp
 
-    4. inside onTap（与onTapUp一般来说是同时触发，但这里标明顺序是因为flutter里这么写的=w=）and onTapCancel（一个手势win同时会触发另一个的lose）
+     4. inside onTap（与onTapUp一般来说是同时触发，但这里标明顺序是因为flutter里这么写的=w=）and onTapCancel（一个手势win同时会触发另一个的lose）
 
 ### 理解Flutter CupertinoContextMenu部分原理
 
@@ -62,7 +63,6 @@ final double animationOpensAt = _previewLongPressTimeout.inMilliseconds / _anima
 final double _midpoint = animationOpensAt / 2;//0.3524229075
 ```
 
-
 打开_ContextMenuRoute之前的三个阶段：
 
 1. onTapDown：叠加诱饵子(Decoy child)，并开始[_openController]动画。
@@ -80,27 +80,25 @@ final double _midpoint = animationOpensAt / 2;//0.3524229075
 
 ## 什么冲突了？
 
-如果置一个TapGestureRecognizer（为了简便我们将其命名为**tg1**）在ContextMenu（ContextMenu里面的TapGestureRecognizer我们命名为**tg2**）子树上，当Tap持续的时间（命名为**t1**）在
+如果置一个TapGestureRecognizer（为了简便我们将其命名为**tg1**）在ContextMenu（ContextMenu里面的TapGestureRecognizer我们命名为**tg2**）子树上，当Tap持续的时间（命名为**t1**）
 
-`kPressTimeout+_previewLongPressTimeout/2` (500ms)
+`kPressTimeout+_previewLongPressTimeout/2` (500ms) < **t1** < `kPressTimeout+_previewLongPressTimeout `(900ms)
 
-到
+此时
 
-`kPressTimeout+_previewLongPressTimeout `(900ms)
+1. 虽然**tg2**被拒绝，但是_ContextMenuRoute依旧被打开 
 
-之间
+2. **tg1**的onTap方法被触发
 
-此时必定会触发1. _ContextMenuRoute被打开 2. **tg1**的onTap方法，这意味着什么？
-
-如果这是一个展示图片的widget，长按打开ContextMenu，而点击打开图片详情页。这时，两者都触发的结果是灾难性的。
+这意味着什么？如果这是一个展示图片的widget，长按打开ContextMenu，而点击打开图片详情页。这时，两者都触发的结果是灾难性的。
 
 ## 为什么冲突？
 
-问题就出在与这个ContextMenu里面的GestureRecognizer是Tap而不是LongPress，Tap并不会宣称自己胜利，而是由Arena选出「子Tap」胜利。
+问题就出在与这个ContextMenu里面的GestureRecognizer是TapGestureRecognizer而不是LongPressGestureRecognizer，Tap并不会宣称自己胜利，而是由GestureArena选出「子Tap」胜利。
 
-当**t1**大于kPressTimeout+\_previewLongPressTimeout/2，代表其经过了PrimaryPointerGestureRecognizer.deadline和\_openController的一半，意味着_ContextMenuRoute即将被打开。而**tg1**此时还未结束识别，Arena识别到pointerUp后，便将其与**tg2**竞争，默认的「子胜利」起了作用，tg1的onTap被调用，于是两者都触发了。
+1. 当**t1**大于kPressTimeout+\_previewLongPressTimeout/2，代表其经过了PrimaryPointerGestureRecognizer.deadline加上\_openController的动画持续时间的一半，意味着_ContextMenuRoute即将被打开。而**tg1**此时还未结束识别，Arena识别到pointerUp后，便将其与**tg2**竞争，默认的「子胜利」起了作用，tg1的onTap被调用，于是两者都触发了。
 
-而**t1**小于kPressTimeout+\_previewLongPressTimeout是因为此时Route被打开，两者都会被Arena拒绝。
+2. 而**t1**小于kPressTimeout+\_previewLongPressTimeout是因为此时Route被打开，两者都会被Arena拒绝。
 
 ## 如何解决？
 
@@ -121,3 +119,20 @@ final double _midpoint = animationOpensAt / 2;//0.3524229075
 
 于是又提了个issue给flutter。。。https://github.com/flutter/flutter/issues/129984
 
+---
+
+哦原来其实不算bug，因为这是flutter_test的缺陷，fakeAsync环境下DateTime是加速流失的，详情见https://github.com/flutter/flutter/issues/129984#issuecomment-1631636472
+
+专业回答！
+
+## Related issues
+
+https://github.com/flutter/flutter/issues/70716
+
+https://github.com/flutter/flutter/issues/52226
+
+https://github.com/flutter/flutter/issues/81057
+
+## Related PR
+
+https://github.com/flutter/flutter/pull/131030
