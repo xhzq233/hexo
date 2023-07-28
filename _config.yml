@@ -7,9 +7,7 @@ title: xhzq'site
 subtitle: ''
 description: ''
 keywords: 
-  - xhzq 
-  - blog 
-  - computer science
+  - blog
   
 author: xhzq
 language: en
@@ -17,7 +15,7 @@ timezone: 'Asia/Shanghai'
 
 # URL
 ## Set your site url here. For example, if you use GitHub Page, set url as 'https://username.github.io/project'
-url: http://xhzq233.tpddns.cn
+url: https://blog.xhzq.xyz
 permalink: :year/:month/:day/:title/
 permalink_defaults:
 pretty_urls:
