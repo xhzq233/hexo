@@ -1,0 +1,10 @@
+## Provider的ViewModel最佳实践
+
+对于不提供通知（或者State不变）的ViewModel就不继承ChangeNotifier，只暴露State。比如一个ViewModel里只有一个不变的数组，View只需要读取并展示，不需要监听。
+
+如果需要监听。把继承了ChangeNotifier的ViewModel尽量拆细。例如HomePage这种，HomeViewModel存一个Index和tabController用于发布页面的切换事件。
+
+ViewModel拆细之后要考虑的是如何通信。一般只有子ViewMode要访问父—或者说较上层的ViewModel，这时可以子ViewModel定义接口，父ViewModel继承并实现，再传给子ViewModel就行了。
+
+例如InputViewModel掌管整个底部输入框的State，而他需要发消息到整个消息列表里，则他需要调用ListViewModel的发消息—添加列表元素的方法，按照以上方法就行。
+
