@@ -6,13 +6,13 @@ tags:
 
 # 实现`ModalBottomSheet`
 
-<!--more-->
-
 定义`ModalBottomSheet`是**可滑动关闭**的**底部弹出**Route，并且可以定义上一Route的Transition动画，这个动画是跟手的。
 
 iOS13中新出现了一种弹出Route，是堆叠形式的**底部弹出**Route，暂且将其命名为`StackModalPopup`。
 
 所以`StackModalPopup`是`ModalBottomSheet`的子集，只是自定义了动画。
+
+<!--more-->
 
 ## 如何在route中获取上一个和下一个route
 
