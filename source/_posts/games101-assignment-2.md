@@ -1,16 +1,46 @@
 ---
-title: games101_assignment_2[WIP]
+title: games101_assignment_2
 date: 2024-02-02 16:17:02
-tags:
+tags: CG
 ---
 
 本篇记录games101作业二的各种解法以及常见错误，比如MSAA的黑边。
 
-![image-20240202193421384](../../../Library/Application%20Support/typora-user-images/image-20240202193421384.png) to ![image-20240202193444350](../../../Library/Application%20Support/typora-user-images/image-20240202193444350.png)
+![image-20240202193421384](https://raw.githubusercontent.com/xhzq233/images/master/2024-02-02/image-20240202193421384.png) 
+![image-20240202193444350](https://raw.githubusercontent.com/xhzq233/images/master/2024-02-02/image-20240202193444350.png)
 
 <!--more-->
 
+## 判断点在三角形内部
 
+SignBit提取出符号位。
+
+```cpp
+#define SignBit(x) (((signed char*)&x)[sizeof(x)-1]>>7 | 1)
+static bool insideTriangle(float x, float y, const Vector3f *_v) {
+    // To check if the point (x, y) is inside the triangle represented by _v[0], _v[1], _v[2]
+    float pre_test, test;
+    Vector3f p(x, y, 0);
+
+    for (int i = 0; i < 3; ++i) {
+        auto v = _v[(i + 1) % 3] - _v[i];
+        auto v_p = p - _v[i];
+        if (i == 0) {
+            pre_test = v.cross(v_p).z();
+        } else {
+            test = v.cross(v_p).z();
+
+            if (SignBit(test) != SignBit(pre_test)) return false;
+            pre_test = test;
+        }
+    }
+    return true;
+}
+```
+
+
+
+## 光栅化代码
 
 先看看MSAA_OFF的代码。正常流程，当前点在较前就直接设置颜色。
 
@@ -67,10 +97,4 @@ auto start = frame_buf_sample.begin() + frame_idx * MSAA_X;
 set_pixel(p, std::reduce(start, start + MSAA_X) / MSAA_X);
 ```
 
-
-
-
-
-
-
-但是想一想，之前
+想一想有没有更节省空间的办法，比如遇到了混入底色的frame，把它还原回去。仔细想了感觉反而更麻烦了，遂放弃。
