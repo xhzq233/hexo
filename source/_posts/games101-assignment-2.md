@@ -1,7 +1,9 @@
 ---
 title: games101_assignment_2
 date: 2024-02-02 16:17:02
-tags: CG
+mathjax: true
+tags: 
+  - CG
 ---
 
 本篇记录games101作业二的各种解法以及常见错误，比如MSAA的黑边。

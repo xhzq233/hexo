@@ -101,9 +101,3 @@ ignore:
 ## Themes: https://hexo.io/themes/
 theme: hexo-theme-next
 
-# Deployment
-## Docs: https://hexo.io/docs/one-command-deployment
-deploy:
-  type: git
-  repo: hayden@xhzq233.tpddns.cn:/home/hayden/blog.git
-  branch: master
