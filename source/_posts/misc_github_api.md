@@ -23,3 +23,13 @@ tags:
 
 于是考虑使用 flutter + web 代替，尽量完整 apple 系原生体验，后端使用 github issues api，参考评论区系统 https://jw1.dev/2022/10/23/a01/
 
+----
+
+Update
+
+以上大部分作废，github oauth app还是需要回传 token，静态 pages 无法实现。
+
+于是借用了一位爹的服务器打算自己造一下储存，典中典之 gin+gorm 后端。
+
+之后又想了下用狗狗公共服务懒得自己搭数据库，使用 firebase database + messaging + google oauth + 爹的服务器上的pushNotification服务作为后端，flutter 作 web 前端。
+
