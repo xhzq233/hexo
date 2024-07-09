@@ -33,3 +33,17 @@ Update
 
 之后又想了下用狗狗公共服务懒得自己搭数据库，使用 firebase database + messaging + google oauth + 爹的服务器上的pushNotification服务作为后端，flutter 作 web 前端。
 
+### 问题记录：
+
+Firebase SDK 中的`FirebaseMessaging.instance.requestPermission`方法，一开始总是喜提 Denied，也没见授权弹窗。更离谱是概率事件，有时候能有授权弹窗。
+
+找了一下午代码，messaging web sdk 通过调用 `Notification: requestPermission() `方法完成授权，其中重要的一句如下。
+
+> https://developer.mozilla.org/en-US/docs/Web/API/Notification/requestPermission_static
+>
+> **Note:** In the above example we spawn notifications in response to a user gesture (clicking a button). This is not only best practice — you should not be spamming users with notifications they didn't agree to — but going forward browsers will explicitly disallow notifications not triggered in response to a user gesture. Firefox is already doing this from version 72, for example.
+
+而 Firebase 并未指明该方法需要在手势后调用。这下知道概率触发的原因了，大概是因为 dart 代码加载慢，先给了手势再执行的 requestPermission 代码。
+
+
+
