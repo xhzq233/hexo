@@ -9,7 +9,7 @@ date: 2021-06-10 15:03:26
 - 💌 I am interested in the client(especially iOS) and front-end.
 - 📫 How to reach me: xhzq233@gmail.com
 
-## 友達
+## 友链
 
 > 私にとって、友とはそんな...「対等な者」だと思っています
 
