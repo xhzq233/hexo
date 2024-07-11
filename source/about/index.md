@@ -16,8 +16,11 @@ date: 2021-06-10 15:03:26
 - https://alex4210987.github.io
 - http://7erry.com
 - https://yuchenx.pages.dev/blog
+- https://dangui.site/
 - https://moonold.github.io
 - https://matto.top
+- https://16bit-sensation.com
+- https://cjiw.site
 
 ## Coding Activity
 
