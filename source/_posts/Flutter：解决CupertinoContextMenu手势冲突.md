@@ -117,3 +117,39 @@ https://github.com/flutter/flutter/issues/81057
 ## Related PR
 
 https://github.com/flutter/flutter/pull/131030
+
+## 2024/8/12 Updated
+
+以上只声明了手势胜利，如果没有主动声明失败，也会导致手势冲突。
+
+### 理想情况和现状
+
+比如一个 tg1 套在 contextMenu(tg2) 外层。理想情况是，点击后只有 tg1 响应（contextMenu 不应该点一下就打开），然而现状是点击时只会响应 tg2 。
+
+因为 tg2 在子树，且他没有主动声明失败，所以默认 tg1失败了。
+
+### 解决方法
+
+为了主动声明失败，我们需要列一下失败场景：
+
+1. 非常迅速的点击，未超过 100ms。此时两个 tg 的 ontapdown 方法还未触发，onPointerUp 便已经触发，竞技场准备好决胜了。此时 tg2 准备获胜，tg2 的 ontapdown、ontapup 被依次调用，decoyChild的动画也被短暂执行。
+2. 超过 100ms 但未超过 midpoint。此时 tg1 和 tg2 都作为待选者，二者 ontapdown 都被触发。在竞技场决胜时（onPointerUp），最终 tg2 还是获胜，tg 的 ontapup 被调用。
+3. 超过 midpoint 的**持续按压**。此时 tg2 主动声明胜利。
+
+可见场景 1 和 2 是需要调整的。调整为：
+
+1. 在竞技场决胜时，tg2 直接声明失败，tg2 ontapdown、ontapup、ontapcancel 均不会调用，tg1 胜利。
+2. tg2 声明失败，tg2 ontapdown虽已调用，但不会调用 up ，会调用 ontapcancel 清理decoyChild动画逻辑，tg1 胜利。
+
+综上所述，解决方法应该只有一个，Listener中的onPointerUp事件中添加以下代码：
+
+```dart
+Listener(
+onPointerUp: (PointerUpEvent event) {
+  if (_openController.value < _midpoint) {
+    _tapGestureRecognizer.resolve(GestureDisposition.rejected);
+  }
+});
+```
+
+曾想过用 GestureArenaManager.hold 方式延缓决胜，这样也许可以让场景 1 和 2 统一，但非常迅速的点击出现decoyChild的动画不合理，遂放弃。
