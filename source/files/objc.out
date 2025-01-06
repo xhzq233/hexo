@@ -1,0 +1,106 @@
+sil_stage raw
+
+import Builtin
+import Swift
+import SwiftShims
+
+import Foundation
+
+class PigeonError {
+  @objc func wrapResult()
+  @objc deinit
+  init()
+}
+
+// main
+sil [ossa] @main : $@convention(c) (Int32, UnsafeMutablePointer<Optional<UnsafeMutablePointer<Int8>>>) -> Int32 {
+bb0(%0 : $Int32, %1 : $UnsafeMutablePointer<Optional<UnsafeMutablePointer<Int8>>>):
+  %2 = integer_literal $Builtin.Int32, 0          // user: %3
+  %3 = struct $Int32 (%2 : $Builtin.Int32)        // user: %4
+  return %3 : $Int32                              // id: %4
+} // end sil function 'main'
+
+// PigeonError.wrapResult()
+sil hidden [ossa] @main.PigeonError.wrapResult() -> () : $@convention(method) (@guaranteed PigeonError) -> () {
+// %0 "self"                                      // user: %1
+bb0(%0 : @guaranteed $PigeonError):
+  debug_value %0 : $PigeonError, let, name "self", argno 1 // id: %1
+  %2 = tuple ()                                   // user: %3
+  return %2 : $()                                 // id: %3
+} // end sil function 'main.PigeonError.wrapResult() -> ()'
+
+// @objc PigeonError.wrapResult()
+sil private [thunk] [ossa] @@objc main.PigeonError.wrapResult() -> () : $@convention(objc_method) (PigeonError) -> () {
+// %0                                             // user: %1
+bb0(%0 : @unowned $PigeonError):
+  %1 = copy_value %0 : $PigeonError               // users: %6, %2
+  %2 = begin_borrow %1 : $PigeonError             // users: %5, %4
+  // function_ref PigeonError.wrapResult()
+  %3 = function_ref @main.PigeonError.wrapResult() -> () : $@convention(method) (@guaranteed PigeonError) -> () // user: %4
+  %4 = apply %3(%2) : $@convention(method) (@guaranteed PigeonError) -> () // user: %7
+  end_borrow %2 : $PigeonError                    // id: %5
+  destroy_value %1 : $PigeonError                 // id: %6
+  return %4 : $()                                 // id: %7
+} // end sil function '@objc main.PigeonError.wrapResult() -> ()'
+
+// PigeonError.deinit
+sil hidden [ossa] @main.PigeonError.deinit : $@convention(method) (@guaranteed PigeonError) -> @owned Builtin.NativeObject {
+// %0 "self"                                      // users: %2, %1
+bb0(%0 : @guaranteed $PigeonError):
+  debug_value %0 : $PigeonError, let, name "self", argno 1 // id: %1
+  %2 = unchecked_ref_cast %0 : $PigeonError to $Builtin.NativeObject // user: %3
+  %3 = unchecked_ownership_conversion %2 : $Builtin.NativeObject, @guaranteed to @owned // user: %4
+  return %3 : $Builtin.NativeObject               // id: %4
+} // end sil function 'main.PigeonError.deinit'
+
+// PigeonError.__deallocating_deinit
+sil hidden [ossa] @main.PigeonError.__deallocating_deinit : $@convention(method) (@owned PigeonError) -> () {
+// %0 "self"                                      // users: %6, %3, %1
+bb0(%0 : @owned $PigeonError):
+  debug_value %0 : $PigeonError, let, name "self", argno 1 // id: %1
+  // function_ref PigeonError.deinit
+  %2 = function_ref @main.PigeonError.deinit : $@convention(method) (@guaranteed PigeonError) -> @owned Builtin.NativeObject // user: %4
+  %3 = begin_borrow %0 : $PigeonError             // users: %5, %4
+  %4 = apply %2(%3) : $@convention(method) (@guaranteed PigeonError) -> @owned Builtin.NativeObject // user: %7
+  end_borrow %3 : $PigeonError                    // id: %5
+  end_lifetime %0 : $PigeonError                  // id: %6
+  %7 = unchecked_ref_cast %4 : $Builtin.NativeObject to $PigeonError // user: %8
+  dealloc_ref %7 : $PigeonError                   // id: %8
+  %9 = tuple ()                                   // user: %10
+  return %9 : $()                                 // id: %10
+} // end sil function 'main.PigeonError.__deallocating_deinit'
+
+// PigeonError.__allocating_init()
+sil hidden [exact_self_class] [ossa] @main.PigeonError.__allocating_init() -> main.PigeonError : $@convention(method) (@thick PigeonError.Type) -> @owned PigeonError {
+// %0 "$metatype"
+bb0(%0 : $@thick PigeonError.Type):
+  %1 = alloc_ref $PigeonError                     // user: %3
+  // function_ref PigeonError.init()
+  %2 = function_ref @main.PigeonError.init() -> main.PigeonError : $@convention(method) (@owned PigeonError) -> @owned PigeonError // user: %3
+  %3 = apply %2(%1) : $@convention(method) (@owned PigeonError) -> @owned PigeonError // user: %4
+  return %3 : $PigeonError                        // id: %4
+} // end sil function 'main.PigeonError.__allocating_init() -> main.PigeonError'
+
+// PigeonError.init()
+sil hidden [ossa] @main.PigeonError.init() -> main.PigeonError : $@convention(method) (@owned PigeonError) -> @owned PigeonError {
+// %0 "self"                                      // users: %2, %1
+bb0(%0 : @owned $PigeonError):
+  debug_value %0 : $PigeonError, let, name "self", argno 1 // id: %1
+  %2 = mark_uninitialized [rootself] %0 : $PigeonError // users: %4, %3
+  %3 = copy_value %2 : $PigeonError               // user: %5
+  destroy_value %2 : $PigeonError                 // id: %4
+  return %3 : $PigeonError                        // id: %5
+} // end sil function 'main.PigeonError.init() -> main.PigeonError'
+
+sil_vtable PigeonError {
+  #PigeonError.wrapResult: (PigeonError) -> () -> () : @main.PigeonError.wrapResult() -> ()	// PigeonError.wrapResult()
+  #PigeonError.init!allocator: (PigeonError.Type) -> () -> PigeonError : @main.PigeonError.__allocating_init() -> main.PigeonError	// PigeonError.__allocating_init()
+  #PigeonError.deinit!deallocator: @main.PigeonError.__deallocating_deinit	// PigeonError.__deallocating_deinit
+}
+
+
+
+// Mappings from '#fileID' to '#filePath':
+//   'main/2.swift' => '2.swift'
+
+
