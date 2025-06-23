@@ -2,6 +2,8 @@
 title: Mixins of Dart
 date: 2023-09-06 10:59:33
 tags:
+- Dart
+- Flutter
 ---
 
 # Dart里的Mixin
